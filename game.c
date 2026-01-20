@@ -327,7 +327,7 @@ void playPickUp(GameState* g){
         return;
     }
     Item *it = pl->currentRoom->item;
-    if(bstFind(pl->bag,it,compareItems) != NULL){
+    if(bstFind(pl->bag->root,it,compareItems) != NULL){
         printf("Duplicate item.\n");
         return;
     }else{
@@ -344,15 +344,15 @@ void playBag(GameState* g){
     switch (chose)
     {
     case 1:
-        bstPreorder(g->player->bag,printItem);
+        bstPreorder(g->player->bag->root,printItem);
         break;
     
     case 2:
-        bstInorder(g->player->bag,printItem);
+        bstInorder(g->player->bag->root,printItem);
         break;      
     
     case 3:
-        bstPostorder(g->player->bag,printItem);
+        bstPostorder(g->player->bag->root,printItem);
         break;
     default:
         break;
@@ -364,15 +364,15 @@ void playDefeated(GameState* g){
     switch (chose)
     {
     case 1:
-        bstPreorder(g->player->defeatedMonsters,printMonster);
+        bstPreorder(g->player->defeatedMonsters->root,printMonster);
         break;
     
     case 2:
-        bstInorder(g->player->defeatedMonsters,printMonster);
+        bstInorder(g->player->defeatedMonsters->root,printMonster);
         break;      
     
     case 3:
-        bstPostorder(g->player->defeatedMonsters,printMonster);
+        bstPostorder(g->player->defeatedMonsters->root,printMonster);
         break;
     default:
         break;
@@ -422,6 +422,8 @@ void playGame(GameState* g){
 void freeGame(GameState* g){
     bstFree(g->player->bag->root,freeItem);
     bstFree(g->player->defeatedMonsters->root,freeMonster);
+    free(g->player->bag);
+    free(g->player->defeatedMonsters);
     free(g->player);
     Room *current = g->rooms;
     while(current != NULL){
