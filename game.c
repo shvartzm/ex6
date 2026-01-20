@@ -184,8 +184,8 @@ void addRoom(GameState* g){
     {
         displayMap(g);
         displayRoomLegend(g);
-        int attachTo = getInt("Attach to room ID:\n");
-        int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right):\n");
+        int attachTo = getInt("Attach to room ID: ");
+        int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right): ");
         Room *check = findRoomWithId(g,attachTo);
         if(findRoomWithCordsAndDir(g,check->x,check->y,dir) != NULL){
             printf("Room exists there\n");
@@ -200,22 +200,22 @@ void addRoom(GameState* g){
     room -> x = x;
     room -> y = y;
 
-    int addmon = getInt("Add monster? (1=Yes, 0=No):\n");
+    int addmon = getInt("Add monster? (1=Yes, 0=No): ");
     if(addmon == 1){
         Monster* mon = (Monster*) malloc(sizeof(Monster));
-        mon ->name = getString("Monster Name:\n");
-        mon->type = getInt("Type (0-4):\n");
-        mon-> maxHp = getInt("HP:\n");
+        mon ->name = getString("Monster Name: ");
+        mon->type = getInt("Type (0-4): ");
+        mon-> maxHp = getInt("HP: ");
         mon->hp = mon-> maxHp;
-        mon->attack = getInt("Attack:\n");
+        mon->attack = getInt("Attack: ");
         room->monster = mon;
     }
-    int additem = getInt("Add item? (1=Yes, 0=No):\n");
+    int additem = getInt("Add item? (1=Yes, 0=No): ");
     if (additem == 1){
         Item* item = (Item*) malloc(sizeof(Item));
-        item->name = getString("Item name:\n");
-        item->type = getInt("Type (0=Armor, 1=Sword):\n");
-        item->value = getInt("Value:\n");
+        item->name = getString("Item name: ");
+        item->type = getInt("Type (0=Armor, 1=Sword): ");
+        item->value = getInt("Value: ");
         room -> item = item;
     }
     if(g-> rooms == NULL){
@@ -280,7 +280,7 @@ void playMove(GameState* g){
         printf("Kill monster first\n");
         return;
     }
-    int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right):\n");
+    int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right): ");
     Room *moveto = findRoomWithCordsAndDir(g,g->player->currentRoom->x,g->player->currentRoom->y,dir);
     if(moveto == NULL){
         printf("No room there\n");
@@ -300,10 +300,12 @@ void playFight(GameState* g){
     while(pl->hp > 0 && mon ->hp > 0){
         if(turn){
             mon->hp -= pl->baseAttack;
+            if (mon->hp < 0) mon->hp = 0;
             printf("You deal %d damage. Monster HP: %d\n",pl->baseAttack,mon->hp);
             turn = 0;
         }else{
             pl->hp -= mon->attack;
+            if (pl->hp < 0) pl->hp = 0;
             printf("Monster deals %d damage. Your HP: %d\n",mon->attack,pl->hp);
             turn = 1;
         }
