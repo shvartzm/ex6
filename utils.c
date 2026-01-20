@@ -47,8 +47,7 @@ int giveDesX(int x, int dir){
         case 3:
             hori = 1;
             break;
-        default: 
-            return NULL;
+        default: break;;
     }
     return x+ hori;
 }
@@ -68,8 +67,7 @@ int giveDesY(int y, int dir){
         case 3:
             hori = 1;
             break;
-        default: 
-            return NULL;
+        default: break;
     }
     return y+ vert;
 }

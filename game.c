@@ -43,11 +43,6 @@ static void displayMap(GameState* g) {
     free(grid);
 }
 
-static void displayRoomLegend(GameState* g){
-    printf("=== ROOM LEGEND ===\n");
-    displayRoomLegendRec(g->rooms); 
-    printf("===================\n");
-}
 static void displayRoomLegendRec(Room* head){
      if(head == NULL){
         return;
@@ -58,6 +53,12 @@ static void displayRoomLegendRec(Room* head){
      printf("ID %d: [M:%c] [I:%c]\n", head->id,m,i);
 
 }
+static void displayRoomLegend(GameState* g){
+    printf("=== ROOM LEGEND ===\n");
+    displayRoomLegendRec(g->rooms); 
+    printf("===================\n");
+}
+
 
 void freeMonster(void* data){
     Monster *mon = (Monster*) data;
