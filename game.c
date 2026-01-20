@@ -44,12 +44,12 @@ static void displayMap(GameState* g) {
 }
 
 static void displayRoomLegendRec(Room* head){
-     if(head == NULL){
+     if(head == NULL){ // make sure not empty
         return;
      }
-     displayRoomLegendRec(head->next);
-     char m = head->monster!= NULL ? 'V' : 'X'; 
-     char i = head->item!= NULL ? 'V' : 'X'; 
+     displayRoomLegendRec(head->next); // do it recursivly so it goes from last to first
+     char m = head->monster!= NULL ? 'V' : 'X'; // check if theres a monster
+     char i = head->item!= NULL ? 'V' : 'X';  // check if theres an item
      printf("ID %d: [M:%c] [I:%c]\n", head->id,m,i);
 
 }
@@ -61,27 +61,27 @@ static void displayRoomLegend(GameState* g){
 
 
 void freeMonster(void* data){
-    Monster *mon = (Monster*) data;
+    Monster *mon = (Monster*) data; // cast to Monster
     free(mon->name);
     free(mon);
 }
 
 int compareMonsters(void* a, void* b){
-    Monster *mon1 = (Monster*) a;
+    Monster *mon1 = (Monster*) a; // cast both
     Monster *mon2 = (Monster*) b;
     if (strcmp(mon1->name,mon2->name) != 0)
     {
-        return strcmp(mon1->name,mon2->name);
+        return strcmp(mon1->name,mon2->name); // first check name
     }
     if (mon1->attack != mon2->attack){
-        return (mon1-> attack) - (mon2-> attack);
+        return (mon1-> attack) - (mon2-> attack); // then attack
     }
     if(mon1->maxHp != mon2-> maxHp){
-        return (mon1->maxHp) - (mon2->maxHp);
+        return (mon1->maxHp) - (mon2->maxHp); // then hp
     }
-    return (mon1->type) - (mon2->type); 
+    return (mon1->type) - (mon2->type); //lastly hp
 }
-const char* getMonsterType(MonsterType type)
+const char* getMonsterType(MonsterType type) // get string value from MonsterType
 {
     switch(type){
     case PHANTOM: return "Phantom";
@@ -93,29 +93,29 @@ const char* getMonsterType(MonsterType type)
     }
 }
 void printMonster(void* data){
-    Monster *mon = (Monster*) data;
+    Monster *mon = (Monster*) data; // cast
     printf("[%s] Type: %s, Attack: %d, HP: %d\n",mon->name,getMonsterType(mon->type),mon->attack, mon->maxHp);
 }
 
 void freeItem(void* data){
-    Item *it = (Item*) data;
+    Item *it = (Item*) data; // cast
     free(it->name);
     free(it);
 }
 
 int compareItems(void* a, void* b){
-    Item *it1 = (Item*) a;
+    Item *it1 = (Item*) a; // cast both
     Item *it2 = (Item*) b;
-    if (strcmp(it1->name,it2->name) != 0)
+    if (strcmp(it1->name,it2->name) != 0) //first check name
     {
         return strcmp(it1->name,it2->name);
     }
-    if (it1->value != it2->value){
+    if (it1->value != it2->value){ // then check value
         return (it1-> value) - (it2-> value);
     }
-    return (it1->type) - (it2->type); 
+    return (it1->type) - (it2->type); //lastly check type
 }
-const char* getItemType(ItemType item){
+const char* getItemType(ItemType item){ // translate ItemType to string
     if (item == SWORD){
         return "SWORD";
     }else if(item == ARMOR){
@@ -123,7 +123,7 @@ const char* getItemType(ItemType item){
     }
     return "No name";
 }
-Room* findRoomWithId(GameState* g, int id){
+Room* findRoomWithId(GameState* g, int id){ // return room with given id
     Room *current = g->rooms;
     while(current != NULL){
         if (current->id == id){
@@ -140,16 +140,16 @@ Room* findRoomWithCordsAndDir(GameState* g, int x,int y,int dir){
     int hori = 0; 
     switch(dir) {
         case 0: 
-            vert = -1;
+            vert = -1; // up
             break;
         case 1: 
-            vert = 1;
+            vert = 1; // down
             break;
         case 2:
-            hori = -1;
+            hori = -1;  //left
             break;
         case 3:
-            hori = 1;
+            hori = 1; // right
             break;
         default: 
             return NULL;
@@ -157,7 +157,7 @@ Room* findRoomWithCordsAndDir(GameState* g, int x,int y,int dir){
 
     Room *current = g->rooms;
     while(current != NULL){
-        if (current->x == x + hori && current->y == y + vert){
+        if (current->x == x + hori && current->y == y + vert){ // check if found
             return current;
             break;
         }
@@ -169,30 +169,30 @@ Room* findRoomWithCordsAndDir(GameState* g, int x,int y,int dir){
 
 
 void printItem(void* data){
-    Item *it = (Item*)data;
+    Item *it = (Item*)data; //cast
     printf("[%s] %s - Value: %d\n", getItemType(it->type),it->name, it->value);
 }
 void addRoom(GameState* g){
-    Room* room = (Room*) malloc(sizeof(Room));
-    room->monster = NULL;
+    Room* room = (Room*) malloc(sizeof(Room)); // alloc new room
+    room->monster = NULL; // init values accordingly
     room->item = NULL;
     room->visited = 0;
     room->next = NULL;
     int x = 0;
     int y = 0;
-    if (g->roomCount !=0)
+    if (g->roomCount !=0) // if its not first
     {
         displayMap(g);
         displayRoomLegend(g);
         int attachTo = getInt("Attach to room ID: ");
         int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right): ");
-        Room *check = findRoomWithId(g,attachTo);
-        if(findRoomWithCordsAndDir(g,check->x,check->y,dir) != NULL){
+        Room *check = findRoomWithId(g,attachTo); 
+        if(findRoomWithCordsAndDir(g,check->x,check->y,dir) != NULL){ // check if a room exits in given location
             printf("Room exists there\n");
             free(room);
             return;
         }
-        x = giveDesX(check->x,dir);
+        x = giveDesX(check->x,dir); // set new cords
         y = giveDesY(check->y,dir);
     }
     room -> id = g -> roomCount;
@@ -202,8 +202,8 @@ void addRoom(GameState* g){
 
     int addmon = getInt("Add monster? (1=Yes, 0=No): ");
     if(addmon == 1){
-        Monster* mon = (Monster*) malloc(sizeof(Monster));
-        mon ->name = getString("Monster name: ");
+        Monster* mon = (Monster*) malloc(sizeof(Monster)); //mem alloc new monster
+        mon ->name = getString("Monster name: "); // init mon accordingly
         mon->type = getInt("Type (0-4): ");
         mon-> maxHp = getInt("HP: ");
         mon->hp = mon-> maxHp;
@@ -212,17 +212,17 @@ void addRoom(GameState* g){
     }
     int additem = getInt("Add item? (1=Yes, 0=No): ");
     if (additem == 1){
-        Item* item = (Item*) malloc(sizeof(Item));
-        item->name = getString("Item name: ");
+        Item* item = (Item*) malloc(sizeof(Item)); // mem alloc item
+        item->name = getString("Item name: "); //init item accordingly
         item->type = getInt("Type (0=Armor, 1=Sword): ");
         item->value = getInt("Value: ");
         room -> item = item;
     }
-    if(g-> rooms == NULL){
+    if(g-> rooms == NULL){ //first room
         g-> rooms = room;
     }else{
         Room *current = g->rooms;
-        while(current -> next != NULL) current = current -> next;
+        while(current -> next != NULL) current = current -> next; // add room to last place in linked list
         current -> next = room;
     }
     printf("Created room %d at (%d,%d)\n",room->id,room->x,room->y);
@@ -232,12 +232,12 @@ void initPlayer(GameState* g){
         printf("Create rooms first\n");
         return;
     }
-    Player *pl = (Player*) malloc(sizeof(Player));
-    pl->baseAttack = g ->configBaseAttack;
+    Player *pl = (Player*) malloc(sizeof(Player)); // mem new player
+    pl->baseAttack = g ->configBaseAttack; // init accordingly
     pl->maxHp = g->configMaxHp;
     pl -> hp = g-> configMaxHp;
-    pl->bag = createBST(compareItems,printItem,freeItem);
-    pl->defeatedMonsters = createBST(compareMonsters,printMonster,freeMonster);
+    pl->bag = createBST(compareItems,printItem,freeItem); // make sure to initilize its BST
+    pl->defeatedMonsters = createBST(compareMonsters,printMonster,freeMonster); // make sure to initilize its BST
     pl->currentRoom = g->rooms;
 
     g->player = pl;
@@ -247,7 +247,7 @@ int gameWon(GameState* g){
     int counter = 0;
     Room *current = g->rooms;
     while(current != NULL){
-        if(current->monster != NULL){
+        if(current->monster != NULL){ // a living monster was found :-0
             return 0;
         }
         if(current->visited){
@@ -255,7 +255,7 @@ int gameWon(GameState* g){
         }
         current = current-> next;
     }
-    if (counter == g->roomCount){
+    if (counter == g->roomCount){ // check if all rooms were visited
         return 1;
     }
     return 0;
@@ -272,17 +272,17 @@ void printRoom(GameState* g,Room* room){
 }
 
 void playMove(GameState* g){
-    if(g->player->currentRoom->monster != NULL){
+    if(g->player->currentRoom->monster != NULL){ // check if a monster exists
         printf("Kill monster first\n");
         return;
     }
     int dir = getInt("Direction (0=Up,1=Down,2=Left,3=Right): ");
-    Room *moveto = findRoomWithCordsAndDir(g,g->player->currentRoom->x,g->player->currentRoom->y,dir);
+    Room *moveto = findRoomWithCordsAndDir(g,g->player->currentRoom->x,g->player->currentRoom->y,dir); // get the des room
     if(moveto == NULL){
-        printf("No room there\n");
+        printf("No room there\n"); 
     }else{
         g->player->currentRoom = moveto;
-        g->player->currentRoom->visited = 1;
+        g->player->currentRoom->visited = 1; // make sure to mark as visited asap
     }
 }
 
@@ -294,27 +294,28 @@ void playFight(GameState* g){
     int turn = 1;
     Monster *mon = g->player->currentRoom->monster;
     Player *pl = g->player;
-    while(pl->hp > 0 && mon ->hp > 0){
+    while(pl->hp > 0 && mon ->hp > 0){ // as long as both are alive
         if(turn){
             mon->hp -= pl->baseAttack;
-            if (mon->hp < 0) mon->hp = 0;
+            if (mon->hp < 0) mon->hp = 0;// make sure no minus in print
             printf("You deal %d damage. Monster HP: %d\n",pl->baseAttack,mon->hp);
             turn = 0;
         }else{
             pl->hp -= mon->attack;
-            if (pl->hp < 0) pl->hp = 0;
+            if (pl->hp < 0) pl->hp = 0; // make suren no minus in print
             printf("Monster deals %d damage. Your HP: %d\n",mon->attack,pl->hp);
             turn = 1;
         }
     }
-    if (pl->hp > 0){
+    if (pl->hp > 0){ // monster dead
         printf("Monster defeated!\n");
+        // notice that bstInsert returns another bst pointer (not void)
         pl->defeatedMonsters->root = bstInsert(pl->defeatedMonsters->root, mon, pl->defeatedMonsters->compare);
 
         pl->currentRoom->monster = NULL;
     }
     else{
-        printf("--- YOU DIED ---\n");
+        printf("--- YOU DIED ---\n"); // :'(
     }
 }
 void playPickUp(GameState* g){
@@ -327,11 +328,11 @@ void playPickUp(GameState* g){
         return;
     }
     Item *it = pl->currentRoom->item;
-    if(bstFind(pl->bag->root,it,compareItems) != NULL){
+    if(bstFind(pl->bag->root,it,compareItems) != NULL){ // check if there isnt a nother item the same
         printf("Duplicate item.\n");
         return;
     }else{
-        pl->bag->root = bstInsert(pl->bag->root, it, pl->bag->compare);
+        pl->bag->root = bstInsert(pl->bag->root, it, pl->bag->compare); // notice that bstInsert gives new pointer
         printf("Picked up %s\n",it->name);
         pl->currentRoom->item = NULL;
         return;
@@ -395,11 +396,11 @@ void playGame(GameState* g){
         {
         case 1:
             playMove(g);
-            if (gameWon(g)) return;
+            if (gameWon(g)) return; // check for win immidiatly after
             break;
         case 2:
              playFight(g);
-             if (gameWon(g)) return;
+             if (gameWon(g)) return; // check for win immidiatly after
              break;
         case 3:
              playPickUp(g);
@@ -423,19 +424,21 @@ void playGame(GameState* g){
     }
 }
 void freeGame(GameState* g){
-    bstFree(g->player->bag->root,freeItem);
-    bstFree(g->player->defeatedMonsters->root,freeMonster);
-    free(g->player->bag);
-    free(g->player->defeatedMonsters);
-    free(g->player);
+    bstFree(g->player->bag->root,freeItem); // free bag bst
+    bstFree(g->player->defeatedMonsters->root,freeMonster); // free def bst
+    free(g->player->bag); // free bag wrapper
+    free(g->player->defeatedMonsters); // free def wrapper
+    free(g->player); // free player
     Room *current = g->rooms;
     while(current != NULL){
-        Room *next = current->next;
-        if (current->item) freeItem(current->item);
-        if (current->monster) freeMonster(current->monster);
-        free(current);
+        Room *next = current->next; // used as some sort of a temp
+        if (current->item) freeItem(current->item); // free the item in the room
+        if (current->monster) freeMonster(current->monster);// free the monster in the room :D
+        free(current); // free room
         current = next;
     }
+
+    
     
 }
 

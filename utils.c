@@ -35,10 +35,10 @@ int giveDesX(int x, int dir){
     int hori = 0; 
         switch(dir) {
         case 2:
-            hori = -1;
+            hori = -1; // left
             break;
         case 3:
-            hori = 1;
+            hori = 1; //right
             break;
         default: break;;
     }
@@ -48,10 +48,10 @@ int giveDesY(int y, int dir){
     int vert = 0;
         switch(dir) {
         case 0: 
-            vert = -1;
+            vert = -1; // up
             break;
         case 1: 
-            vert = 1;
+            vert = 1; // down
             break;
         default: break;
     }
