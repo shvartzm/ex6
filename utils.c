@@ -32,15 +32,8 @@ char* getString(const char* prompt){
 
 
 int giveDesX(int x, int dir){
-    int vert = 0;
     int hori = 0; 
         switch(dir) {
-        case 0: 
-            vert = -1;
-            break;
-        case 1: 
-            vert = 1;
-            break;
         case 2:
             hori = -1;
             break;
@@ -53,19 +46,12 @@ int giveDesX(int x, int dir){
 }
 int giveDesY(int y, int dir){
     int vert = 0;
-    int hori = 0; 
         switch(dir) {
         case 0: 
             vert = -1;
             break;
         case 1: 
             vert = 1;
-            break;
-        case 2:
-            hori = -1;
-            break;
-        case 3:
-            hori = 1;
             break;
         default: break;
     }
