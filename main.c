@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
         int c = getInt("Choice: ");
         if (c == 4) running = 0;
         else if (c >= 1 && c <= 3) actions[c](&game);
-        if(game.player->hp < 0 || gameWon(&game)){
+        if(game.player && (game.player->hp <= 0 || gameWon(&game))){
             running = 0;
         }
     }
