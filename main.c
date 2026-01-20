@@ -24,6 +24,12 @@ int main(int argc, char* argv[]) {
         if (c == 4) running = 0;
         else if (c >= 1 && c <= 3) actions[c](&game);
         if(game.player && (game.player->hp <= 0 || gameWon(&game))){
+            if(gameWon(&game)){
+                printf("***************************************\n");
+                printf("VICTORY!\n");
+                printf(" All rooms explored. All monsters defeated.\n");
+                printf("***************************************\n");
+            }
             running = 0;
         }
     }

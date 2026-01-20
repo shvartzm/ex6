@@ -256,10 +256,6 @@ int gameWon(GameState* g){
         current = current-> next;
     }
     if (counter == g->roomCount){
-        printf("***************************************\n");
-        printf("VICTORY!\n");
-        printf(" All rooms explored. All monsters defeated.\n");
-        printf("***************************************\n");
         return 1;
     }
     return 0;
