@@ -59,7 +59,22 @@ void printItem(void* data);
 // Game functions
 void addRoom(GameState* g);
 void initPlayer(GameState* g);
+void playMove(GameState* g);
+void playFight(GameState* g);
+void playPickUp(GameState* g);
+void playBag(GameState* g);
+void playDefeated(GameState* g);
+void playQuit(GameState* g);
 void playGame(GameState* g);
 void freeGame(GameState* g);
+
+const char* getMonsterType(MonsterType type);
+const char* getItemType(ItemType type);
+
+Room* findRoom(GameState* g, int id);
+Room* findRoomWithCordsAndDir(GameState* g, int x,int y,int dir);
+
+int gameWon(GameState* g);
+void printRoom(GameState* g,Room* room);
 
 #endif
