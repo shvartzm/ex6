@@ -235,15 +235,33 @@ void initPlayer(GameState* g){
     pl->baseAttack = g ->configBaseAttack;
     pl->maxHp = g->configMaxHp;
     pl -> hp = g-> configMaxHp;
-    pl->bag = NULL;
-    pl->defeatedMonsters = NULL;
+    pl->bag = createBST(compareItems,printItem,freeItem);
+    pl->defeatedMonsters = createBST(compareMonsters,printMonster,freeMonster);
     pl->currentRoom = g->rooms;
 
     g->player = pl;
 }
 
 int gameWon(GameState* g){
-    return 1;
+    int counter = 0;
+    Room *current = g->rooms;
+    while(current != NULL){
+        if(current->monster != NULL){
+            return 0;
+        }
+        if(current->visited){
+            counter++;
+        }
+        current = current-> next;
+    }
+    if (counter == g->roomCount){
+        printf("***************************************\n");
+        printf("             VICTORY!\n");
+        printf(" All rooms explored. All monsters defeated.\n");
+        printf("***************************************\n");
+        return 1;
+    }
+    return 0;
 }
 void printRoom(GameState* g,Room* room){
     printf("--- Room %d ---\n",room->id);
@@ -291,8 +309,76 @@ void playFight(GameState* g){
     }
     if (pl->hp > 0){
         printf("Monster defeated!\n");
+        pl->defeatedMonsters->root = bstInsert(pl->defeatedMonsters->root, mon, pl->defeatedMonsters->compare);
+
+        pl->currentRoom->monster = NULL;
+    }
+    else{
+        printf("--- YOU DIED ---\n");
     }
 }
+void playPickUp(GameState* g){
+    Player *pl = g->player;
+    if (pl->currentRoom ->monster != NULL){
+        printf("Kill monster first\n");
+        return;
+    }else if(pl->currentRoom->item == NULL){
+        printf("No item here\n");
+        return;
+    }
+    Item *it = pl->currentRoom->item;
+    if(bstFind(pl->bag,it,compareItems) != NULL){
+        printf("Duplicate item.\n");
+        return;
+    }else{
+        pl->bag->root = bstInsert(pl->bag->root, it, pl->bag->compare);
+        printf("Picked up %s\n",it->name);
+        pl->currentRoom->item = NULL;
+        return;
+    }
+}
+
+void playBag(GameState* g){
+    printf("=== INVENTORY ===\n");
+    int chose = getInt("1.Preorder 2.Inorder 3.Postorder\n");
+    switch (chose)
+    {
+    case 1:
+        bstPreorder(g->player->bag,printItem);
+        break;
+    
+    case 2:
+        bstInorder(g->player->bag,printItem);
+        break;      
+    
+    case 3:
+        bstPostorder(g->player->bag,printItem);
+        break;
+    default:
+        break;
+    }
+}
+void playDefeated(GameState* g){
+    printf("=== DEFEATED MONSTERS ===\n");
+    int chose = getInt("1.Preorder 2.Inorder 3.Postorder\n");
+    switch (chose)
+    {
+    case 1:
+        bstPreorder(g->player->defeatedMonsters,printMonster);
+        break;
+    
+    case 2:
+        bstInorder(g->player->defeatedMonsters,printMonster);
+        break;      
+    
+    case 3:
+        bstPostorder(g->player->defeatedMonsters,printMonster);
+        break;
+    default:
+        break;
+    }
+}
+
 void playGame(GameState* g){
     if(g->player == NULL){
         printf("Init player first\n");
@@ -302,6 +388,7 @@ void playGame(GameState* g){
         displayMap(g);
         displayRoomLegend(g);
         printRoom(g,g->player->currentRoom);
+        g->player->currentRoom->visited = 1;
         int play = getInt("1.Move 2.Fight 3.Pickup 4.Bag 5.Defeated 6.Quit\n");
         switch (play)
         {
@@ -321,15 +408,31 @@ void playGame(GameState* g){
              playDefeated(g);
              break;
         case 6:
-             playQuit(g);
+             return;
              break;
         default:
             return;
             break;
         }
+        if(g->player->hp < 0){
+            break;
+        }
     }
 }
-void freeGame(GameState* g);
+void freeGame(GameState* g){
+    bstFree(g->player->bag->root,freeItem);
+    bstFree(g->player->defeatedMonsters->root,freeMonster);
+    free(g->player);
+    Room *current = g->rooms;
+    while(current != NULL){
+        Room *next = current->next;
+        if (current->item) freeItem(current->item);
+        if (current->monster) freeMonster(current->monster);
+        free(current);
+        current = next;
+    }
+    
+}
 
 
 
