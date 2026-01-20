@@ -203,7 +203,7 @@ void addRoom(GameState* g){
     int addmon = getInt("Add monster? (1=Yes, 0=No): ");
     if(addmon == 1){
         Monster* mon = (Monster*) malloc(sizeof(Monster));
-        mon ->name = getString("Monster Name: ");
+        mon ->name = getString("Monster name: ");
         mon->type = getInt("Type (0-4): ");
         mon-> maxHp = getInt("HP: ");
         mon->hp = mon-> maxHp;
@@ -257,7 +257,7 @@ int gameWon(GameState* g){
     }
     if (counter == g->roomCount){
         printf("***************************************\n");
-        printf("             VICTORY!\n");
+        printf("VICTORY!\n");
         printf(" All rooms explored. All monsters defeated.\n");
         printf("***************************************\n");
         return 1;
@@ -286,6 +286,7 @@ void playMove(GameState* g){
         printf("No room there\n");
     }else{
         g->player->currentRoom = moveto;
+        g->player->currentRoom->visited = 1;
     }
 }
 
@@ -387,19 +388,22 @@ void playGame(GameState* g){
         printf("Init player first\n");
         return;
     }
-    while(!gameWon(g)){
+    g->player->currentRoom->visited = 1; // make sure room is visited
+    while(1){
         displayMap(g);
         displayRoomLegend(g);
         printRoom(g,g->player->currentRoom);
-        g->player->currentRoom->visited = 1;
+        g->player->currentRoom->visited = 1;// make sure
         int play = getInt("1.Move 2.Fight 3.Pickup 4.Bag 5.Defeated 6.Quit\n");
         switch (play)
         {
         case 1:
             playMove(g);
+            if (gameWon(g)) return;
             break;
         case 2:
              playFight(g);
+             if (gameWon(g)) return;
              break;
         case 3:
              playPickUp(g);
@@ -417,7 +421,7 @@ void playGame(GameState* g){
             return;
             break;
         }
-        if(g->player->hp < 0){
+        if(g->player->hp <= 0){
             break;
         }
     }
